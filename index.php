@@ -1,22 +1,18 @@
 <?php
 
-$connection = new PDO(
-    'mysql:host=mysql-8.0;dbname=catalog;charset=utf8',
-    'root',
-    ''
-);
+$connection = new PDO('mysql:host=mysql-8.0;dbname=catalog;charset=utf8', 'root', '');
 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $query = "
     SELECT 
-        p.id,
-        p.name AS product_name,
-        p.price,
-        c.name AS category_name,
-        s.remainder
-    FROM products p
-    JOIN categories c ON p.category_id = c.id
-    JOIN remainder s ON p.id = s.product_id
+        products.id,
+        products.name as product_name,
+        products.price,
+        categories.name as category_name,
+        remainder.remainder
+    FROM products
+    JOIN categories ON products.category_id = categories.id
+    JOIN remainder ON products.id = remainder.product_id
 ";
 $stmt = $connection->query($query);
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -48,29 +44,18 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </thead>
             <tbody>
             <?php
-            foreach ($products as $product): ?>
+            foreach ($products as $product) { ?>
                 <tr>
-                    <td>
-                        <?= htmlspecialchars($product['product_name']) ?>
-                    </td>
-                    <td>
-                        <?= htmlspecialchars($product['category_name']) ?>
-                    </td>
-                    <td>
-                        <?= $product['price'] ?> ₽
-                    </td>
-                    <td>
-                        <?= $product['remainder'] ?> шт.
-                    </td>
+                    <td><?= htmlspecialchars($product['product_name']) ?></td>
+                    <td><?= htmlspecialchars($product['category_name']) ?></td>
+                    <td><?= $product['price'] ?> ₽</td>
+                    <td><?= $product['remainder'] ?> шт.</td>
                 </tr>
-            <?php
-            endforeach; ?>
+            <?php } ?>
             </tbody>
         </table>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <div class="text-muted">
-                Показано <?= count($products) ?> товаров
-            </div>
+        <div class="text-muted">
+            Показано <?= count($products) ?> товаров
         </div>
     </div>
 </div>
